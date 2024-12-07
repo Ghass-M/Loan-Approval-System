@@ -6,33 +6,33 @@ class ExpertSystem(KnowledgeEngine):
         yield Fact(action="loan_grading")
 
     # Reading inputs from console
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Age=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Age=W())),salience=1)
     def feature_0(self):
         self.declare(Fact(Age=int(input(" Age: "))))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Salary=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Salary=W())),salience=1)
     def feature_1(self):
-        self.declare(Fact(Salary=int(input(" Salary: "))))
+        self.declare(Fact(Salary=int(input(" Salary(TND): "))))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Property=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Property=W())),salience=1)
     def feature_2(self):
         self.declare(Fact(Property=input(" Property: ")))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Vehicule=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Vehicule=W())),salience=1)
     def feature_3(self):
-        self.declare(Fact(Vehicule=input(" Vehicule: ")))  
+        self.declare(Fact(Vehicule=bool(input(" Vehicule: "))))  
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Reason=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Reason=W())),salience=1)
     def feature_4(self):
         self.declare(Fact(Reason=input(" Reason: ")))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Amount=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Amount=W())),salience=1)
     def feature_5(self):
-        self.declare(Fact(Amount=int(input(" Amount: "))))
+        self.declare(Fact(Amount=int(input(" Amount(TND): "))))
     
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Other=W())),salience=-999)
+    @Rule(Fact(action='loan_grading'),NOT(Fact(Other=W())),salience=1)
     def feature_6(self):
-        self.declare(Fact(Other=int(input(" Other: "))))
+        self.declare(Fact(Other=int(input(" Other loans in payment: "))))
 
 
     @Rule(Fact(action='loan_grading'),
@@ -46,14 +46,13 @@ class ExpertSystem(KnowledgeEngine):
           TEST(lambda Age: Age >= 25 and Age <= 60),
           TEST(lambda Salary: Salary >= 1000),
           TEST(lambda Property: Property == "Owner"),
-          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Vehicule: True),
           TEST(lambda Reason: Reason == "Business"),
           TEST(lambda Amount: Amount <= 10000),
           TEST(lambda Other: Other == 0)
           )
-    def Grade(self):
+    def Grade_A_0(self):
         self.declare(Fact(Grade="A"))
-        print("A")
 
     @Rule(Fact(action='loan_grading'),
           Fact(Age=MATCH.Age),
@@ -69,9 +68,9 @@ class ExpertSystem(KnowledgeEngine):
           TEST(lambda Vehicule: False),
           TEST(lambda Reason: Reason == "Personal"),
           TEST(lambda Amount: Amount > 100000),
-          TEST(lambda Other: Other >= 0)
+          TEST(lambda Other: Other >= 0), salience=1
           )
-    def Grade(self):
+    def Grade_G_0(self):
         self.declare(Fact(Grade="G"))
     
 
@@ -83,16 +82,18 @@ class ExpertSystem(KnowledgeEngine):
           Fact(Reason=MATCH.Reason),
           Fact(Amount=MATCH.Amount),
           Fact(Other=MATCH.Other),
-          Fact(Grade=MATCH.Grade))
+          Fact(Grade=MATCH.Grade),salience=3)
     def Grade(self,Age,Salary,Property,Vehicule,Reason,Amount,Other,Grade):
-        print("Age: "+Age)
-        print("Salary: "+Salary)
+        print("--------------------------------------------------")
+        print("Age: "+str(Age))
+        print("Salary: "+str(Salary))
         print("Property: "+Property)
-        print("Vehicule: "+Vehicule)
+        print("Vehicule: "+str(Vehicule))
         print("Reason: "+Reason)
-        print("Amount: "+Amount)
-        print("Other loans in payment: "+Other)
+        print("Amount: "+str(Amount))
+        print("Other loans in payment: "+str(Other))
         print("Loan Grade: "+Grade)
+        print("--------------------------------------------------")
         predictionResult["Age"]=Age
         predictionResult["Salary"]=Salary
         predictionResult["Property"]=Property
@@ -111,24 +112,10 @@ class ExpertSystem(KnowledgeEngine):
           Fact(Reason=MATCH.Reason),
           Fact(Amount=MATCH.Amount),
           Fact(Other=MATCH.Other),
-          Fact(Grade=MATCH.Grade),
-          NOT(Fact(Crop=MATCH.Grade)))
+          NOT(Fact(Grade=MATCH.Grade)),salience=-999)
     def not_matched(self,Age,Salary,Property,Vehicule,Reason,Amount,Other):
-        print("Your features doesn't matches our record")
-        predictionResult["Grade"]="Not defined in our knowledge engine"
-
-    @Rule(Fact(action='loan_grading'),
-          Fact(Age=MATCH.Age),
-          Fact(Salary=MATCH.Salary),
-          Fact(Property=MATCH.Property),
-          Fact(Vehicule=MATCH.Vehicule),
-          Fact(Reason=MATCH.Reason),
-          Fact(Amount=MATCH.Amount),
-          Fact(Other=MATCH.Other),
-          Fact(Grade=MATCH.Grade))
-    def not_matched(self,Age,Salary,Property,Vehicule,Reason,Amount,Other):
-        print("Your features doesn't matches our record")
-        predictionResult["Grade"]="Not defined in our knowledge engine"
+        print("Your inputs are not considered in the knowledge base")
+        predictionResult["Grade"]="Undefined"
 
 
 global predictionResult
