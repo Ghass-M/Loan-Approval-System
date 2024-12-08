@@ -117,7 +117,67 @@ class ExpertSystem(KnowledgeEngine):
         print("Your inputs are not considered in the knowledge base")
         predictionResult["Grade"]="Undefined"
 
+   # Decision rules based on loan grades, Salary, and Amount
+    @Rule(Fact(action='loan_grading'), Fact(Grade="A"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary > 3000 and Amount <= 5000), salience=2)
+    def approve_loan_A(self, Salary, Amount):
+        self.declare(Fact(Decision="Approved: Best Conditions"))
+    
+    @Rule(Fact(action='loan_grading'), Fact(Grade="B"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary > 2500 and Amount <= 7000), salience=2)
+    def approve_loan_B(self, Salary, Amount):
+        self.declare(Fact(Decision="Approved: Good Conditions"))
 
+    @Rule(Fact(action='loan_grading'), Fact(Grade="C"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary > 2000 and Amount <= 10000), salience=2)
+    def approve_loan_C(self, Salary, Amount):
+        self.declare(Fact(Decision="Approved: Standard Conditions"))
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade="D"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary > 1500 and Amount <= 15000), salience=2)
+    def approve_loan_D(self, Salary, Amount):
+        self.declare(Fact(Decision="Approved: Restrictive Conditions"))
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade="E"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary > 1000 and Amount <= 20000), salience=2)
+    def approve_high_risk_loan(self, Salary, Amount):
+        self.declare(Fact(Decision="Approved: High-Risk Conditions"))
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade="F"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
+          TEST(lambda Salary, Amount: Salary <= 1000 or Amount > 20000), salience=2)
+    def conditional_rejection(self, Salary, Amount):
+        self.declare(Fact(Decision="Rejected: Alternative Options Offered"))
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade="G"), salience=2)
+    def reject_loan_G(self):
+        self.declare(Fact(Decision="Rejected: High Risk"))
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), Fact(Decision=MATCH.Decision), salience=1)
+    def display_decision(self, Grade, Decision):
+        """
+        Displays the loan grade and final decision to the user.
+        Updates the global predictionResult with the decision.
+        """
+        print("--------------------------------------------------")
+        print(f"Loan Grade: {Grade}")
+        print(f"Loan Decision: {Decision}")
+        print("--------------------------------------------------")
+        predictionResult["Grade"] = Grade
+        predictionResult["Decision"] = Decision
+
+    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=W())), salience=-999)
+    def undefined_decision(self, Grade):
+        """
+        Handles cases where the grade does not match predefined decision rules.
+        Updates the decision to 'Undefined'.
+        """
+        print("--------------------------------------------------")
+        print(f"Loan Grade: {Grade}")
+        print("Loan Decision: Undefined")
+        print("--------------------------------------------------")
+        predictionResult["Grade"] = Grade
+        predictionResult["Decision"] = "Undefined"    
+        
 global predictionResult
 predictionResult={}
 
