@@ -1,39 +1,38 @@
 from experta import *
+import streamlit as st
 
 class ExpertSystem(KnowledgeEngine):
     @DefFacts()
     def initial(self):
         yield Fact(action="loan_grading")
 
-    # Reading inputs from console
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Age=W())),salience=1)
-    def feature_0(self):
-        self.declare(Fact(Age=int(input(" Age: "))))
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Age=W())))
+    def ask_age(self):
+        self.declare(Fact(Age=st.session_state['Age']))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Salary=W())),salience=1)
-    def feature_1(self):
-        self.declare(Fact(Salary=int(input(" Salary(TND): "))))
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Salary=W())))
+    def ask_salary(self):
+        self.declare(Fact(Salary=st.session_state['Salary']))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Property=W())),salience=1)
-    def feature_2(self):
-        self.declare(Fact(Property=input(" Property: ")))
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Property=W())))
+    def ask_property(self):
+        self.declare(Fact(Property=st.session_state['Property']))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Vehicule=W())),salience=1)
-    def feature_3(self):
-        self.declare(Fact(Vehicule=bool(input(" Vehicule: "))))  
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Vehicule=W())))
+    def ask_vehicle(self):
+        self.declare(Fact(Vehicule=st.session_state['Vehicle']))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Reason=W())),salience=1)
-    def feature_4(self):
-        self.declare(Fact(Reason=input(" Reason: ")))
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Reason=W())))
+    def ask_reason(self):
+        self.declare(Fact(Reason=st.session_state['Reason']))
 
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Amount=W())),salience=1)
-    def feature_5(self):
-        self.declare(Fact(Amount=int(input(" Amount(TND): "))))
-    
-    @Rule(Fact(action='loan_grading'),NOT(Fact(Other=W())),salience=1)
-    def feature_6(self):
-        self.declare(Fact(Other=int(input(" Other loans in payment: "))))
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Amount=W())))
+    def ask_amount(self):
+        self.declare(Fact(Amount=st.session_state['Amount']))
 
+    @Rule(Fact(action='loan_grading'), NOT(Fact(Other=W())))
+    def ask_other_loans(self):
+        self.declare(Fact(Other=st.session_state['OtherLoans']))
 
     @Rule(Fact(action='loan_grading'),
           Fact(Age=MATCH.Age),
@@ -164,6 +163,8 @@ class ExpertSystem(KnowledgeEngine):
         print("--------------------------------------------------")
         predictionResult["Grade"] = Grade
         predictionResult["Decision"] = Decision
+        st.session_state['Grade'] = Grade
+        st.session_state['Decision'] = Decision
 
     @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=W())), salience=-999)
     def undefined_decision(self, Grade):
@@ -181,19 +182,29 @@ class ExpertSystem(KnowledgeEngine):
 global predictionResult
 predictionResult={}
 
-engine=ExpertSystem()
-engine.reset()
-engine.run()
+def main():
+    st.title("Loan Grading Expert System")
 
-"""
+    # Input fields
+    with st.form(key='loan_form'):
+        st.number_input("Age", min_value=18, max_value=99, key='Age')
+        st.number_input("Salary (TND)", min_value=0, key='Salary')
+        st.selectbox("Property Ownership", ["Owner", "Renter"], key='Property')
+        st.radio("Do you own a vehicle?", [True, False], key='Vehicle')
+        st.selectbox("Loan Reason", ["Business", "Personal"], key='Reason')
+        st.number_input("Loan Amount (TND)", min_value=0, key='Amount')
+        st.number_input("Other Loans in Payment", min_value=0, key='OtherLoans')
+        submit = st.form_submit_button(label="Submit")
 
+    if submit:
+        engine = ExpertSystem()
+        engine.reset()
+        engine.run()
+        if 'Grade' in st.session_state:
+            st.success(f"Loan Grade: {st.session_state['Grade']}")
+            st.success(f"Loan Grade: {st.session_state['Decision']}")
+        else:
+            st.warning("No decision could be made based on the inputs.")
 
-def main(inputU):
-    if (not inputU):
-        print("Enter user characteristics")
-    engine=ExpertSystem()
-    engine.reset()
-    engine.run()
-    return predictionResult
-    
-"""
+if __name__ == "__main__":
+    main()
