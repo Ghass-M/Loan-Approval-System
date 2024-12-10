@@ -45,9 +45,9 @@ class ExpertSystem(KnowledgeEngine):
           TEST(lambda Age: Age >= 25 and Age <= 60),
           TEST(lambda Salary: Salary >= 1000),
           TEST(lambda Property: Property == "Owner"),
-          TEST(lambda Vehicule: True),
+          TEST(lambda Vehicule: Vehicule == "True"),
           TEST(lambda Reason: Reason == "Business"),
-          TEST(lambda Amount: Amount <= 10000),
+          TEST(lambda Amount: Amount < 10000),
           TEST(lambda Other: Other == 0)
           )
     def Grade_A_0(self):
@@ -61,17 +61,16 @@ class ExpertSystem(KnowledgeEngine):
           Fact(Reason=MATCH.Reason),
           Fact(Amount=MATCH.Amount),
           Fact(Other=MATCH.Other),
-          TEST(lambda Age: Age > 60),
-          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary >= 1000),
           TEST(lambda Property: Property == "Renter"),
-          TEST(lambda Vehicule: False),
+          TEST(lambda Vehicule: Vehicule == "True"),
           TEST(lambda Reason: Reason == "Personal"),
-          TEST(lambda Amount: Amount > 100000),
-          TEST(lambda Other: Other >= 0), salience=1
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 0)
           )
-    def Grade_G_0(self):
-        self.declare(Fact(Grade="G"))
-    
+    def Grade_A_1(self):
+        self.declare(Fact(Grade="A"))
 
     @Rule(Fact(action='loan_grading'),
           Fact(Age=MATCH.Age),
@@ -81,13 +80,260 @@ class ExpertSystem(KnowledgeEngine):
           Fact(Reason=MATCH.Reason),
           Fact(Amount=MATCH.Amount),
           Fact(Other=MATCH.Other),
-          Fact(Grade=MATCH.Grade),salience=3)
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Owner"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Business"),
+          TEST(lambda Amount: Amount > 100000),
+          TEST(lambda Other: Other == 1)
+          )
+    def Grade_B_0(self):
+        self.declare(Fact(Grade="B"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Medical"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 0)
+          )
+    def Grade_B_1(self):
+        self.declare(Fact(Grade="B"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Owner"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Business"),
+          TEST(lambda Amount: Amount > 100000),
+          TEST(lambda Other: Other == 2)
+          )
+    def Grade_C_0(self):
+        self.declare(Fact(Grade="C"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age < 25),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Business"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 0)
+          )
+    def Grade_C_1(self):
+        self.declare(Fact(Grade="C"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age < 25),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Business"),
+          TEST(lambda Amount: Amount >= 10000 and Amount <= 100000),
+          TEST(lambda Other: Other == 0)
+          )
+    def Grade_C_2(self):
+        self.declare(Fact(Grade="C"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Owner"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Education"),
+          TEST(lambda Amount: Amount >= 10000 and Amount <= 100000),
+          TEST(lambda Other: Other == 1)
+          )
+    def Grade_D_0(self):
+        self.declare(Fact(Grade="D"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age < 25),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Education"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 0)
+          )
+    def Grade_D_1(self):
+        self.declare(Fact(Grade="D"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age < 25),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Education"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 1)
+          )
+    def Grade_E_0(self):
+        self.declare(Fact(Grade="E"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age > 60),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Owner"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Medical"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 0)
+          )
+    def Grade_E_1(self):
+        self.declare(Fact(Grade="E"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age >= 25 and Age <= 60),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Personal"),
+          TEST(lambda Amount: Amount >= 10000 and Amount <= 100000),
+          TEST(lambda Other: Other == 2)
+          )
+    def Grade_F_0(self):
+        self.declare(Fact(Grade="F"))   
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age > 60),
+          TEST(lambda Salary: Salary >= 1000),
+          TEST(lambda Property: Property == "Owner"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Medical"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 2)
+          )
+    def Grade_F_1(self):
+        self.declare(Fact(Grade="F"))     
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age > 60),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "True"),
+          TEST(lambda Reason: Reason == "Medical"),
+          TEST(lambda Amount: Amount < 10000),
+          TEST(lambda Other: Other == 1)
+          )
+    def Grade_G_0(self):
+        self.declare(Fact(Grade="G"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          TEST(lambda Age: Age > 60),
+          TEST(lambda Salary: Salary < 1000),
+          TEST(lambda Property: Property == "Renter"),
+          TEST(lambda Vehicule: Vehicule == "False"),
+          TEST(lambda Reason: Reason == "Personal"),
+          TEST(lambda Amount: Amount > 100000),
+          TEST(lambda Other: Other >= 2)
+          )
+    def Grade_G_1(self):
+        self.declare(Fact(Grade="G"))
+
+    @Rule(Fact(action='loan_grading'),
+          Fact(Age=MATCH.Age),
+          Fact(Salary=MATCH.Salary),
+          Fact(Property=MATCH.Property),
+          Fact(Vehicule=MATCH.Vehicule),
+          Fact(Reason=MATCH.Reason),
+          Fact(Amount=MATCH.Amount),
+          Fact(Other=MATCH.Other),
+          Fact(Grade=MATCH.Grade),salience=-997)
     def Grade(self,Age,Salary,Property,Vehicule,Reason,Amount,Other,Grade):
         print("--------------------------------------------------")
         print("Age: "+str(Age))
         print("Salary: "+str(Salary))
         print("Property: "+Property)
-        print("Vehicule: "+str(Vehicule))
+        print("Vehicule: "+Vehicule)
         print("Reason: "+Reason)
         print("Amount: "+str(Amount))
         print("Other loans in payment: "+str(Other))
