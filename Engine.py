@@ -318,37 +318,7 @@ class ExpertSystem(KnowledgeEngine):
           )
     def Grade_G_1(self):
         self.declare(Fact(Grade="G"))
-
-    @Rule(Fact(action='loan_grading'),
-          Fact(Age=MATCH.Age),
-          Fact(Salary=MATCH.Salary),
-          Fact(Property=MATCH.Property),
-          Fact(Vehicule=MATCH.Vehicule),
-          Fact(Reason=MATCH.Reason),
-          Fact(Amount=MATCH.Amount),
-          Fact(Other=MATCH.Other),
-          Fact(Grade=MATCH.Grade),salience=-997)
-    def Grade(self,Age,Salary,Property,Vehicule,Reason,Amount,Other,Grade):
-        print("--------------------------------------------------")
-        print("Age: "+str(Age))
-        print("Salary: "+str(Salary))
-        print("Property: "+Property)
-        print("Vehicule: "+Vehicule)
-        print("Reason: "+Reason)
-        print("Amount: "+str(Amount))
-        print("Other loans in payment: "+str(Other))
-        print("Loan Grade: "+Grade)
-        print("--------------------------------------------------")
-        predictionResult["Age"]=Age
-        predictionResult["Salary"]=Salary
-        predictionResult["Property"]=Property
-        predictionResult["Vehicule"]=Vehicule
-        predictionResult["Reason"]=Reason
-        predictionResult["Amount"]=Amount
-        predictionResult["Other"]=Other
-        predictionResult["Grade"]=Grade
-        
-        
+    # Pour la console    
     @Rule(Fact(action='loan_grading'),
           Fact(Age=MATCH.Age),
           Fact(Salary=MATCH.Salary),
@@ -359,7 +329,7 @@ class ExpertSystem(KnowledgeEngine):
           Fact(Other=MATCH.Other),
           NOT(Fact(Grade=MATCH.Grade)),salience=-999)
     def not_matched(self,Age,Salary,Property,Vehicule,Reason,Amount,Other):
-        print("Your inputs are not considered in the knowledge base")
+        print("No decision could be made based on the inputs and the knowledge base.")
         predictionResult["Grade"]="Undefined"
 
    # Decision rules based on loan grades, Salary, and Amount
@@ -412,18 +382,6 @@ class ExpertSystem(KnowledgeEngine):
         st.session_state['Grade'] = Grade
         st.session_state['Decision'] = Decision
 
-    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=W())), salience=-999)
-    def undefined_decision(self, Grade):
-        """
-        Handles cases where the grade does not match predefined decision rules.
-        Updates the decision to 'Undefined'.
-        """
-        print("--------------------------------------------------")
-        print(f"Loan Grade: {Grade}")
-        print("Loan Decision: Undefined")
-        print("--------------------------------------------------")
-        predictionResult["Grade"] = Grade
-        predictionResult["Decision"] = "Undefined"    
         
 global predictionResult
 predictionResult={}
@@ -436,8 +394,8 @@ def main():
         st.number_input("Age", min_value=18, max_value=99, key='Age')
         st.number_input("Salary (TND)", min_value=0, key='Salary')
         st.selectbox("Property Ownership", ["Owner", "Renter"], key='Property')
-        st.radio("Do you own a vehicle?", [True, False], key='Vehicle')
-        st.selectbox("Loan Reason", ["Business", "Personal"], key='Reason')
+        st.radio("Do you own a vehicle?", ["True", "False"], key='Vehicle')
+        st.selectbox("Loan Reason", ["Business", "Personal","Medical","Education"], key='Reason')
         st.number_input("Loan Amount (TND)", min_value=0, key='Amount')
         st.number_input("Other Loans in Payment", min_value=0, key='OtherLoans')
         submit = st.form_submit_button(label="Submit")
@@ -450,7 +408,7 @@ def main():
             st.success(f"Loan Grade: {st.session_state['Grade']}")
             st.success(f"Loan Grade: {st.session_state['Decision']}")
         else:
-            st.warning("No decision could be made based on the inputs.")
+            st.warning("No decision could be made based on the inputs and the knowledge base.")
 
 if __name__ == "__main__":
     main()
