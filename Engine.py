@@ -318,19 +318,6 @@ class ExpertSystem(KnowledgeEngine):
           )
     def Grade_G_1(self):
         self.declare(Fact(Grade="G"))
-    # Pour la console    
-    @Rule(Fact(action='loan_grading'),
-          Fact(Age=MATCH.Age),
-          Fact(Salary=MATCH.Salary),
-          Fact(Property=MATCH.Property),
-          Fact(Vehicule=MATCH.Vehicule),
-          Fact(Reason=MATCH.Reason),
-          Fact(Amount=MATCH.Amount),
-          Fact(Other=MATCH.Other),
-          NOT(Fact(Grade=MATCH.Grade)),salience=-999)
-    def not_matched(self,Age,Salary,Property,Vehicule,Reason,Amount,Other):
-        print("No decision could be made based on the inputs and the knowledge base.")
-        predictionResult["Grade"]="Undefined"
 
    # Decision rules based on loan grades, Salary, and Amount
     @Rule(Fact(action='loan_grading'), Fact(Grade="A"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
@@ -349,17 +336,17 @@ class ExpertSystem(KnowledgeEngine):
         self.declare(Fact(Decision="Approved: Standard Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="D"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
-          TEST(lambda Salary, Amount: Salary > 1500 and Amount <= 15000), salience=2)
+          TEST(lambda Salary, Amount: Salary > 800 and Amount <= 15000), salience=2)
     def approve_loan_D(self, Salary, Amount):
         self.declare(Fact(Decision="Approved: Restrictive Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="E"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
-          TEST(lambda Salary, Amount: Salary > 1000 and Amount <= 20000), salience=2)
+          TEST(lambda Salary, Amount: Salary > 1000 and Amount <= 9000), salience=2)
     def approve_high_risk_loan(self, Salary, Amount):
         self.declare(Fact(Decision="Approved: High-Risk Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="F"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
-          TEST(lambda Salary, Amount: Salary <= 1000 or Amount > 20000), salience=2)
+          TEST(lambda Salary, Amount: Salary <700 or Amount > 20000), salience=2)
     def conditional_rejection(self, Salary, Amount):
         self.declare(Fact(Decision="Rejected: Alternative Options Offered"))
 
@@ -369,22 +356,14 @@ class ExpertSystem(KnowledgeEngine):
 
     @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), Fact(Decision=MATCH.Decision), salience=1)
     def display_decision(self, Grade, Decision):
-        """
-        Displays the loan grade and final decision to the user.
-        Updates the global predictionResult with the decision.
-        """
-        print("--------------------------------------------------")
-        print(f"Loan Grade: {Grade}")
-        print(f"Loan Decision: {Decision}")
-        print("--------------------------------------------------")
-        predictionResult["Grade"] = Grade
-        predictionResult["Decision"] = Decision
         st.session_state['Grade'] = Grade
         st.session_state['Decision'] = Decision
 
+    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=MATCH.Decision)), salience=1)
+    def display_decision(self, Grade, Decision):
+        st.session_state['Grade'] = Grade
+        st.session_state['Decision'] = "Further study is required"
         
-global predictionResult
-predictionResult={}
 
 def main():
     st.title("Loan Grading Expert System")
