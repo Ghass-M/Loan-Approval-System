@@ -412,6 +412,8 @@ def main():
                 if "Rejected" in decision:
                     st.error(f"Loan Grade: {grade}")
                     st.error(f"Loan Decision: {decision}")
+                elif decision in ["Further study is required", "Approved with High-Risk Conditions", "Approved with Restrictive Conditions"]:
+                    st.warning(f"Loan Grade : {grade} ; Loan Decision: {decision}.")
                 else:
                     st.success(f"Loan Grade : {grade} ; Loan Decision: {decision}.")
             time.sleep(4)
