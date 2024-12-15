@@ -323,47 +323,62 @@ class ExpertSystem(KnowledgeEngine):
     @Rule(Fact(action='loan_grading'), Fact(Grade="A"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary > 3000 and Amount <= 5000), salience=2)
     def approve_loan_A(self, Salary, Amount):
-        self.declare(Fact(Decision="Approved: Best Conditions"))
+        self.declare(Fact(Decision="Approved with Best Conditions"))
     
     @Rule(Fact(action='loan_grading'), Fact(Grade="B"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary > 2500 and Amount <= 7000), salience=2)
     def approve_loan_B(self, Salary, Amount):
-        self.declare(Fact(Decision="Approved: Good Conditions"))
+        self.declare(Fact(Decision="Approved with Good Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="C"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary > 2000 and Amount <= 10000), salience=2)
     def approve_loan_C(self, Salary, Amount):
-        self.declare(Fact(Decision="Approved: Standard Conditions"))
+        self.declare(Fact(Decision="Approved with Standard Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="D"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary > 800 and Amount <= 15000), salience=2)
     def approve_loan_D(self, Salary, Amount):
-        self.declare(Fact(Decision="Approved: Restrictive Conditions"))
+        self.declare(Fact(Decision="Approved with Restrictive Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="E"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary > 1000 and Amount <= 9000), salience=2)
     def approve_high_risk_loan(self, Salary, Amount):
-        self.declare(Fact(Decision="Approved: High-Risk Conditions"))
+        self.declare(Fact(Decision="Approved with High-Risk Conditions"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="F"), Fact(Salary=MATCH.Salary), Fact(Amount=MATCH.Amount),
           TEST(lambda Salary, Amount: Salary <700 or Amount > 20000), salience=2)
     def conditional_rejection(self, Salary, Amount):
-        self.declare(Fact(Decision="Rejected: Alternative Options Offered"))
+        self.declare(Fact(Decision="Rejected, Alternative Options Offered"))
 
     @Rule(Fact(action='loan_grading'), Fact(Grade="G"), salience=2)
     def reject_loan_G(self):
-        self.declare(Fact(Decision="Rejected: High Risk"))
+        self.declare(Fact(Decision="Rejected, High Risk"))
 
-    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), Fact(Decision=MATCH.Decision), salience=1)
-    def display_decision(self, Grade, Decision):
+    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), Fact(Decision=MATCH.Decision), salience=2)
+    def display_decision_with_decision(self, Grade, Decision):
+        print(f"Decision exists: Grade={Grade}, Decision={Decision}")
         st.session_state['Grade'] = Grade
         st.session_state['Decision'] = Decision
 
-    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=MATCH.Decision)), salience=1)
-    def display_decision(self, Grade, Decision):
+    @Rule(Fact(action='loan_grading'), Fact(Grade=MATCH.Grade), NOT(Fact(Decision=W())), salience=1)
+    def display_decision_without_decision(self, Grade):
+        print(f"No decision: Grade={Grade}, Default decision='Further study is required'")
         st.session_state['Grade'] = Grade
-        st.session_state['Decision'] = "Further study is required"
-        
+        st.session_state['Decision'] = "Further study is required"    
+import time
+
+def display_message(grade, decision, delay=2):
+    message_container = st.container()  
+    with message_container:
+        if "Rejected" in decision:
+            st.error(f"Loan Grade: {grade}")
+            st.error(f"Loan Decision: {decision}")
+        else:
+            st.success(f"Loan Grade: {grade}")
+            st.success(f"Loan Decision: {decision}")
+    time.sleep(delay)
+    message_container.empty()  
+
 
 def main():
     st.title("Loan Grading Expert System")
@@ -379,13 +394,28 @@ def main():
         st.number_input("Other Loans in Payment", min_value=0, key='OtherLoans')
         submit = st.form_submit_button(label="Submit")
 
+
+    if 'message_container' not in st.session_state:
+        st.session_state['message_container'] = st.empty()
+
     if submit:
+        # Initialize and run the expert system
         engine = ExpertSystem()
         engine.reset()
         engine.run()
-        if 'Grade' in st.session_state:
-            st.success(f"Loan Grade: {st.session_state['Grade']}")
-            st.success(f"Loan Grade: {st.session_state['Decision']}")
+
+        if 'Grade' in st.session_state and 'Decision' in st.session_state:
+            grade = st.session_state['Grade']
+            decision = st.session_state['Decision']
+
+            with st.session_state['message_container']:
+                if "Rejected" in decision:
+                    st.error(f"Loan Grade: {grade}")
+                    st.error(f"Loan Decision: {decision}")
+                else:
+                    st.success(f"Loan Grade : {grade} ; Loan Decision: {decision}.")
+            time.sleep(4)
+            st.session_state['message_container'].empty()
         else:
             st.warning("No decision could be made based on the inputs and the knowledge base.")
 
